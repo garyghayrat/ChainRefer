@@ -11,7 +11,12 @@ import { publicProvider } from "wagmi/providers/public";
 export default function App({ Component, pageProps }: AppProps) {
   const { chains, publicClient } = configureChains(
     [sepolia],
-    [publicProvider()]
+    [
+      alchemyProvider({
+        apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY as string,
+      }),
+      publicProvider(),
+    ]
   );
 
   const { connectors } = getDefaultWallets({
