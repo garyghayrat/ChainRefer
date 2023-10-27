@@ -7,11 +7,13 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { abi as PayPoolABI } from "../../src/abi/PayPoolABI.json";
+import { Button } from "@/components/ui/button";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const { address: connectedUserWalletAddress } = useAccount();
+  const referrerID = 1;
 
   const {
     config: configUpdateReferrerId,
@@ -21,7 +23,7 @@ export default function Home() {
     address: "0x39Aeb70797da90C7b335669EF1a7A0930Fc759E8",
     abi: PayPoolABI,
     functionName: "updateReferrerId",
-    args: [connectedUserWalletAddress, 1],
+    args: [connectedUserWalletAddress, referrerID],
   });
 
   const {
@@ -44,7 +46,7 @@ export default function Home() {
       </div>
 
       <div>
-        <button
+        <Button
           disabled={!writeUpdateReferrerId || isLoading}
           onClick={() =>
             writeUpdateReferrerId
@@ -52,8 +54,8 @@ export default function Home() {
               : console.log("no writeUpdateReferrerId")
           }
         >
-          {isLoading ? "Minting..." : "Mint"}
-        </button>
+          {isLoading ? "Pending..." : "Get a Referrer ID"}
+        </Button>
         {isSuccess && (
           <div>
             Successfully updated referrerId to 1.
@@ -66,6 +68,7 @@ export default function Home() {
           <div>Error: {(prepareError || error)?.message}</div>
         )}
       </div>
+      <div></div>
     </main>
   );
 }
