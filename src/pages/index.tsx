@@ -5,11 +5,45 @@ import {
   useContractWrite,
   useAccount,
   useWaitForTransaction,
+  sepolia,
 } from "wagmi";
 import { abi as PayPoolABI } from "../../src/abi/PayPoolABI.json";
 import { Button } from "@/components/ui/button";
+import {
+  createPublicClient,
+  http,
+  parseAbiItem,
+  parseUnits,
+  stringify,
+} from "viem";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const getLogs = async () => {
+  const publicClient = createPublicClient({
+    chain: sepolia,
+    transport: http(),
+  });
+
+  const logs = await publicClient.getLogs({
+    address: "0x287B0e934ed0439E2a7b1d5F0FC25eA2c24b64f7",
+    event: parseAbiItem(
+      "event Swap(address indexed, address indexed, int256 , int256 , uint160 , uint128, int24)"
+    ),
+    // inputs: [
+    //   { type: "address", indexed: true, name: "from" },
+    //   { type: "address", indexed: true, name: "to" },
+    // ],
+    // args: {
+    //   from: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+    //   to: "0xa5cc3c03994db5b0d9a5eedd10cabab0813678ac",
+    // },
+    fromBlock: BigInt(4575280),
+    toBlock: BigInt(4575285),
+  });
+  console.log(stringify(logs));
+  return logs;
+};
 
 export default function Home() {
   const { address: connectedUserWalletAddress } = useAccount();
@@ -45,7 +79,7 @@ export default function Home() {
         <ConnectButton />
       </div>
 
-      <div>
+      <div className="flex gap-4">
         <Button
           disabled={!writeUpdateReferrerId || isLoading}
           onClick={() =>
@@ -56,6 +90,12 @@ export default function Home() {
         >
           {isLoading ? "Pending..." : "Get a Referrer ID"}
         </Button>
+        <Button>Tie a referee to a referrer ID</Button>
+        <Button>
+          Start a campaign for a contract address and add funds to pool
+        </Button>
+        <Button onClick={() => getLogs()}>Get logs</Button>
+        <Button>Referral Successful</Button>
         {isSuccess && (
           <div>
             Successfully updated referrerId to 1.
